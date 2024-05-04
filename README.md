@@ -6,7 +6,7 @@ El script checkServer está diseñado para resolver los registros PTR de una lis
 Utiliza las bibliotecas estándar de Python para interactuar con DNS y realizar operaciones de entrada/salida.
 
 El objetivo principal es obtener el registro A de los dominios y, en consecuencia, determinar el hostname del servidor al cual corresponde dicho registro A.
-Es decir, busca determinar en que servidor se encuentra alojado el sitio web de un dominio.
+Es decir, determina en que servidor se encuentra alojado el sitio web de los dominios.
 
 1. **Verificación del Archivo de Entrada:** El script verifica que se haya proporcionado un nombre de archivo como argumento de línea de comandos y que este tenga la extensión .in. Si no cumple con estas condiciones, muestra un mensaje de error y termina la ejecución.
 
@@ -18,15 +18,22 @@ Es decir, busca determinar en que servidor se encuentra alojado el sitio web de 
 
 ### Uso:
 
+Para utilizar el script, sigue estos pasos:
+
 - Asegúrate de tener instalado Python 3 en tu sistema.
-- Crea un archivo de texto con la lista de dominios que deseas verificar. Asegúrate de que el archivo tenga la extensión .in y que cada dominio esté en una línea separada.
-- Ejecuta el script desde la línea de comandos, pasando el nombre del archivo de la lista de dominios como argumento.
-- El script procesará los dominios y escribirá los resultados en un archivo CSV.
+- Crea un archivo de texto con la lista de dominios que deseas verificar. Asegúrate de que el archivo tenga la extensión .in y que cada dominio esté en una línea separada.- Dale permisos de ejecución con el siguiente comando: `chmod +x checkServer`
+- Ejecuta el script desde la línea de comandos, pasando el nombre del archivo de la lista de dominios como argumento:
 
+```
+./checkServer <listadoDominios.in>
+```
 
-## Ejemplos:
+Ejemplo: 
+```
+./checkServer dominios.in
+```
 
-### Archivo de entrada:
+### Ejemplo de archivo de entrada:
 
 dominios.in:
 ```
@@ -36,7 +43,7 @@ dominio2
 dominioN
 ```
 
-### Archivo de salida: 
+### Ejemplo de archivo de salida: 
 dominios.csv:
 ```
 Dominio,PTR
