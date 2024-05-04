@@ -1,0 +1,118 @@
+#!/usr/bin/env python3
+# Command checkServer
+# version 0.1
+# by: Alexis Velázquez
+
+import os, sys, socket, re
+import csv
+ 
+class Color:
+    CYAN = '\033[96m'
+    GREEN = '\033[92m'
+    RED = '\033[91m'
+    YELLOW = '\033[93m'
+    BOLD = '\033[1m'
+    END = '\033[0m'
+
+class DomainResolver:
+	"""
+    Se encarga de resolver diferentes registros DNS de un dominio.
+    """
+	def getARecord(self, domain):
+		"""
+        Obtiene el registro A para el dominio.
+        """
+		return os.popen(f'dig a {domain} +short').read().strip()
+
+	def getPTRRecord(self, domain):
+		"""
+        Obtiene el registro PTR para el dominio.
+        """
+		aRecord = self.getARecord(domain)
+		ipMatch = re.search(r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b', aRecord)
+		if ipMatch:
+			ipAddress = ipMatch.group()
+			try:
+				ptrRecord = socket.gethostbyaddr(ipAddress)
+				return ptrRecord[0]
+			except socket.herror:
+				return "No se encontró el hostname"
+		else:
+			return "Dirección IP Inválida"	
+    
+class DomainListReader:
+	"""
+    Lee una lista de dominios desde un archivo.
+    """
+	def __init__(self, filename):
+		self.filename = filename
+		self.domains = []
+
+	def readFile(self):
+		"""
+        Lee el archivo y almacena los dominios en una lista.
+        """
+		try:
+			with open(self.filename, 'r') as file:
+				for line in file:
+					self.domains.append(line.strip())
+		except FileNotFoundError:
+			print(f'\n{Color.RED}Error: No se encontró el archivo {self.filename}{Color.END}')
+
+	def getDomains(self):
+		return self.domains
+
+class DomainListWriter:
+    """
+    Escribe una lista de dominios y sus PTR en un archivo con la extensión .csv.
+    """
+    def __init__(self, filename):
+        self.filename = filename.replace('.in', '.csv')
+
+    def writeFile(self, domainsWithPTRList):
+        """
+        Escribe la lista de dominios y sus PTR en el archivo
+        """
+		
+        try:
+            with open(self.filename, 'w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(['Dominio', 'PTR'])
+                for domain, ptr in domainsWithPTRList:
+                    writer.writerow([domain, ptr])
+            print(f'\n{Color.GREEN}Archivo {self.filename} creado exitosamente.{Color.END}')
+        except Exception as e:
+            print(f'\n{Color.RED}Error al escribir en el archivo {self.filename}: {e}{Color.END}')
+
+def main():
+    # Se obtiene el nombre del archivo recibido por parámetro
+	if len(sys.argv) != 2:
+		print(f'\n{Color.RED}No has ingresado el nombre del listado de dominios.{Color.END}')
+		print(f'{Color.GREEN}Uso:{Color.END} {Color.CYAN}./checkServer <listadoDominios>{Color.END}\n')
+		sys.exit(1)
+
+	filename = sys.argv[1]
+	
+	# Se verifica que el nombre del archivo tenga la extensión .in. En caso contrario, se termina la ejecución.
+	if not filename.endswith('.in'):
+		print(f'\n{Color.RED}El archivo debe tener la extensión .in.{Color.END}\n')
+		sys.exit(1)
+    
+	reader = DomainListReader(filename)
+	reader.readFile()
+	domainList = reader.getDomains()
+
+	domainsWithPTRList = []
+	for domain in domainList:
+		resolver = DomainResolver()
+		ptrRecord = resolver.getPTRRecord(domain)
+		domainsWithPTRList.append((domain, ptrRecord))
+        
+	writer = DomainListWriter(filename)
+	writer.writeFile(domainsWithPTRList)
+    
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('Terminando ejecución...\n')
