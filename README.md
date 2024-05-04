@@ -21,7 +21,8 @@ Es decir, determina en que servidor se encuentra alojado el sitio web de los dom
 Para utilizar el script, sigue estos pasos:
 
 - Asegúrate de tener instalado Python 3 en tu sistema.
-- Crea un archivo de texto con la lista de dominios que deseas verificar. Asegúrate de que el archivo tenga la extensión .in y que cada dominio esté en una línea separada.- Dale permisos de ejecución con el siguiente comando: `chmod +x checkServer`
+- Crea un archivo de texto con la lista de dominios que deseas verificar. Asegúrate de que el archivo tenga la extensión .in y que cada dominio esté en una línea separada.
+- Dale permisos de ejecución con el siguiente comando: `chmod +x checkServer`
 - Ejecuta el script desde la línea de comandos, pasando el nombre del archivo de la lista de dominios como argumento:
 
 ```
